@@ -67,3 +67,5 @@ path = "/dev:/dev"
 source = "${WS_PATH}"
 target = "/home/${USER_NAME}/work"
 
+[lifecycle]
+restart = "no"
