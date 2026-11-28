@@ -9,6 +9,7 @@ on:
     tags:
       - 'v*'
   pull_request:
+  merge_group:
   workflow_dispatch:
 
 jobs:
@@ -23,6 +24,22 @@ jobs:
         ROS_DISTRO=noetic
         ROS_TAG=ros-base
         UBUNTU_CODENAME=focal
+
+  ci-rollup:
+    name: ci-rollup
+    needs: call-docker-build
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 檢查必要 job 結果
+        env:
+          BUILD_RESULT: ${{ needs.call-docker-build.result }}
+        run: |
+          if [ "${BUILD_RESULT}" != "success" ]; then
+            echo "call-docker-build 結果為 ${BUILD_RESULT}"
+            exit 1
+          fi
 
   call-release:
     needs: call-docker-build
